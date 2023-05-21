@@ -1,0 +1,40 @@
+{
+  "name": "douban-group-reporter",
+  "version": "1.0.0",
+  "description": "😡豆瓣小组评论批量举报工具",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "douban": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=16.20.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "douban",
+    "douban-group",
+    "reporter",
+    "interactive-command-line"
+  ],
+  "author": "justorez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/justorez/douban-group-reporter/issues"
+  },
+  "homepage": "https://github.com/justorez/douban-group-reporter#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "cheerio": "1.0.0-rc.12",
+    "console-table-printer": "^2.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.13"
+  }
+}
