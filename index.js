@@ -4,6 +4,7 @@ import readline from 'readline'
 import Tool from './src/tool.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const [ cookie ] = process.argv.slice(2)
 
 async function main() {
     const rl = readline.createInterface({
@@ -12,7 +13,7 @@ async function main() {
     })
     const question = (q) => new Promise(r => rl.question(q, r))
     const url = await question('Topic URL: ')
-    const tool = new Tool(url) // /group/topic/288481259
+    const tool = new Tool(url, cookie)
     await tool.fetchComments()
     await tool.fetchReasons()
     while (true) {

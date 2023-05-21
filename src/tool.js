@@ -7,12 +7,15 @@ import headers from './headers.js'
 import { splitRow } from './utils.js'
 
 export default class Tool {
-    constructor(url) {
+    constructor(url, cookie) {
         this.url = url
         this.topicId = path.parse(url).base
         this.service = axios.create({
             baseURL: 'https://www.douban.com',
-            headers,
+            headers: {
+                ...headers,
+                cookie
+            },
             httpsAgent: new https.Agent({
                 keepAlive: true,
                 rejectUnauthorized: false
