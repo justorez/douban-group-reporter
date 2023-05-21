@@ -25,8 +25,8 @@ douban "your_cookie_string"
 5. 选择举报原因的序号，自动举报已过滤的评论（直接回车，表示跳过）
 6. 是否继续（输入 n 结束）
 
-![](./resource/1.png)
+[![p95LBMn.png](https://s1.ax1x.com/2023/05/21/p95LBMn.png)](https://imgse.com/i/p95LBMn)
 
-![](./resource/2.png)
+[![p95LDrq.png](https://s1.ax1x.com/2023/05/21/p95LDrq.png)](https://imgse.com/i/p95LDrq)
 
-![](./resource/3.png)
+[![p95LyZV.png](https://s1.ax1x.com/2023/05/21/p95LyZV.png)](https://imgse.com/i/p95LyZV)
