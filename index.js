@@ -2,6 +2,7 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import readline from 'readline'
 import Tool from './src/tool.js'
+import { clearConsole } from './src/utils.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const [ cookie ] = process.argv.slice(2)
@@ -34,7 +35,9 @@ async function main() {
 
         is = await question('Continue reporting? ')
         if (is === 'n') break
+        
         tool.clearKeywords()
+        clearConsole()
     }
     rl.close()
 }
