@@ -10,6 +10,11 @@ export default class Tool {
     constructor(url, cookie) {
         this.url = url
         this.topicId = path.parse(url).base
+        this.groupId = ''
+        /**
+         * 暂不清楚含义，非固定值，不一致会导致举报接口失败
+         */
+        this.ck = this.parseCookie(cookie)['ck']
         this.service = axios.create({
             baseURL: 'https://www.douban.com',
             headers: {
@@ -27,6 +32,14 @@ export default class Tool {
         this.comments = null
         this.reasons = null
         this.keywords = null
+    }
+
+    /**
+     * 抓取帖子评论和规定的举报理由
+     */
+    async init() {
+        await this.fetchComments()
+        await this.fetchReasons()
     }
 
     /**
@@ -68,6 +81,17 @@ export default class Tool {
                 }
             })
             .toArray()
+    }
+
+    parseCookie(str) {
+        const cookies = {}
+        str && str.split(';').forEach(item => {
+            const cookiePair = item.split('=')
+            const key = decodeURIComponent(cookiePair[0].trim())
+            const value = cookiePair.length > 1 ? decodeURIComponent(cookiePair[1]) : ''
+            cookies[key] = value
+        })
+        return cookies
     }
 
     async fetchComments() {
@@ -148,7 +172,7 @@ export default class Tool {
                 comment_id: cmt.id,
                 type: reason.type || reason.id,
                 reason: reason.name,
-                ck: 'fCBy'
+                ck: this.ck
             }
             await this.service.post(
                 `/j/group/${this.groupId}/member_report`,

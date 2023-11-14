@@ -11,7 +11,7 @@ pnpm add douban-group-reporter -g
 ## Usage
 
 ```bash
-# 一定要加双引号
+# 一定要加双引号！！！
 douban "your_cookie_string"
 ```
 

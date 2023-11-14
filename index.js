@@ -15,8 +15,7 @@ async function main() {
     const question = (q) => new Promise(r => rl.question(q, r))
     const url = await question('Topic URL: ')
     const tool = new Tool(url, cookie)
-    await tool.fetchComments()
-    await tool.fetchReasons()
+    await tool.init()
     while (true) {
         let is = await question('Print Comments? ')
         if (is !== 'n') await tool.printComments()
