@@ -29,10 +29,10 @@ async function main() {
         is = await question('Print Reasons? ')
         if (is !== 'n') await tool.printReasons()
 
-        const index = await question('Reason Index: ')
+        const index = await question('Input Reason Index: ')
         if (index !== '') await tool.report(index)
 
-        is = await question('Continue reporting? ')
+        is = await question('Continue Reporting? ')
         if (is === 'n') break
         
         tool.clearKeywords()
