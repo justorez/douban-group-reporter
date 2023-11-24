@@ -12,6 +12,8 @@ pnpm add douban-group-reporter -g
 
 ```bash
 # 一定要加双引号！！！
+# cookie 会被保存到 ~/.douban/.cookie
+# 后续使用无需再次输入 cookie
 douban "your_cookie_string"
 ```
 
