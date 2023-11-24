@@ -1,7 +1,7 @@
 {
   "name": "douban-group-reporter",
-  "version": "1.0.2",
-  "description": "😡豆瓣小组评论批量举报工具",
+  "version": "1.1.0",
+  "description": "豆瓣小组评论批量举报工具💢",
   "main": "index.js",
   "type": "module",
   "bin": {
@@ -21,7 +21,7 @@
     "douban",
     "douban-group",
     "reporter",
-    "interactive-command-line"
+    "cli"
   ],
   "author": "justorez",
   "license": "MIT",

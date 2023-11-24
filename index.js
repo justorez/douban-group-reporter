@@ -2,12 +2,12 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import readline from 'readline'
 import Tool from './src/tool.js'
-import { clearConsole } from './src/utils.js'
+import { clearConsole, loadCookie } from './src/utils.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const [ cookie ] = process.argv.slice(2)
 
 async function main() {
+    const cookie = loadCookie()
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
@@ -41,4 +41,3 @@ async function main() {
     rl.close()
 }
 main()
-

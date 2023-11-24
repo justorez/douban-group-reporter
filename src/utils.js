@@ -1,4 +1,27 @@
 import * as readline from 'node:readline'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+
+/**
+ * 从本地读取 cookie [~/.douban/.cookie](#)。
+ *
+ * 如果 cookie 文件不存在，则从命令行参数读取，并写入到本地文件。
+ */
+export function loadCookie() {
+    let cookie = ''
+    const dir = path.join(os.homedir(), '.douban')
+    const file = path.join(dir, '.cookie')
+    if (fs.existsSync(file)) {
+        cookie = fs.readFileSync(file, 'utf8')
+    }
+    if (cookie) return cookie
+
+    fs.mkdirSync(dir, { recursive: true })
+    cookie = process.argv.slice(2)[0] || ''
+    fs.writeFileSync(file, cookie, { encoding: 'utf8' })
+    return cookie
+}
 
 /**
  * 按照 n 个字节长度切分 row

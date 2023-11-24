@@ -12,7 +12,7 @@ export default class Tool {
         this.topicId = path.parse(url).base
         this.groupId = ''
         /**
-         * 暂不清楚含义，非固定值，不一致会导致举报接口失败
+         * cookie 标识，举报接口需要该参数
          */
         this.ck = this.parseCookie(cookie)['ck']
         this.service = axios.create({
@@ -63,11 +63,11 @@ export default class Tool {
                 return {
                     id: el.attr('id'),
                     authorId: el.attr('data-author-id'),
-                    authorName: el
+                    username: el
                         .find('.reply-doc .bg-img-green a')
                         .text()
                         .trim(),
-                    authorUrl: el
+                    profile: el
                         .find('.reply-doc .bg-img-green a')
                         .attr('href'),
                     img: el
@@ -116,8 +116,8 @@ export default class Tool {
                 index: i,
                 type: x.type,
                 id: x.id,
-                name: x.name,
-                desc: x.desc
+                category: x.desc,
+                name: x.name
             }))
         this.reasons = reasons
         return reasons
@@ -132,14 +132,14 @@ export default class Tool {
     async printComments() {
         const p = new Table({
             columns: [
-                { name: "authorName" },
-                { name: "authorUrl" },
+                { name: "username" },
+                { name: "profile" },
                 { name: "content", maxLen: 20, alignment: 'left' },
             ]
         })
         const cmts = (await this.getComments()).map(c => ({
-            authorName: c.authorName,
-            authorUrl: c.authorUrl,
+            username: c.username,
+            profile: c.profile,
             content: c.content,
         }))
         cmts.forEach(cmt => {
@@ -152,11 +152,11 @@ export default class Tool {
 
     async getComments() {
         if (!this.comments) await this.fetchComments()
-        return this.comments.filter(({ authorName, content, hidden }) => {
+        return this.comments.filter(({ username, content, hidden }) => {
             return (
                 !hidden &&
                 (!(this.keywords && this.keywords.length) ||
-                    this.keywords.includes(authorName) ||
+                    this.keywords.includes(username) ||
                     this.keywords.some((k) => content.includes(k)))
             )
         })
@@ -179,7 +179,7 @@ export default class Tool {
                 params,
                 { responseType: 'json' }
             )
-            console.log(`[已举报] [${reason.name}]`, cmt.authorName, cmt.authorUrl, cmt.content)
+            console.log(`[已举报] [${reason.name}]`, cmt.username, cmt.profile, cmt.content)
             await new Promise((r) => setTimeout(r, 1500))
         }
         console.log('')
