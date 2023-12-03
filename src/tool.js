@@ -3,6 +3,7 @@ import * as https from 'https'
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 import { printTable, Table } from 'console-table-printer'
+import { cloneDeep } from 'lodash-es'
 import headers from './headers.js'
 import { splitRow } from './utils.js'
 
@@ -30,6 +31,8 @@ export default class Tool {
             responseType: 'document'
         })
         this.comments = null
+        this.totalPage = 1 // 评论总页数
+        this.rawReasons = null
         this.reasons = null
         this.keywords = null
     }
@@ -40,13 +43,18 @@ export default class Tool {
     async init() {
         await this.fetchComments()
         await this.fetchReasons()
+        return {
+            reasons: this.rawReasons,
+            comments: this.comments,
+            totalPage: this.totalPage
+        }
     }
 
     /**
-     * @param {string} s 
+     * @param {string} s
      */
     setKeywords(s) {
-        this.keywords = s.split(/\s*,\s*/)
+        this.keywords = s?.trim().split(/\s+/)
     }
 
     clearKeywords() {
@@ -57,7 +65,8 @@ export default class Tool {
         const $ = cheerio.load(html)
         const groupUrl = $('.side-reg .title a').attr('href')
         this.groupId = path.parse(new URL(groupUrl).pathname).base
-        return $('.comment-item.reply-item')
+        this.totalPage = Number($('.thispage').attr('data-total-page') || 1)
+        return $('#comments .comment-item.reply-item')
             .map((_, el) => {
                 el = $(el)
                 return {
@@ -81,6 +90,7 @@ export default class Tool {
                 }
             })
             .toArray()
+            .filter(x => !x.hidden)
     }
 
     parseCookie(str) {
@@ -105,6 +115,7 @@ export default class Tool {
             `https://m.douban.com/rexxar/api/v2/group/${this.groupId}/report_reasons`,
             { responseType: 'json' }
         )
+        this.rawReasons = cloneDeep(data.douban_reasons)
         let reasons = data.douban_reasons
             .reduce((arr, item) => {
                 item.type = item.id
@@ -152,12 +163,11 @@ export default class Tool {
 
     async getComments() {
         if (!this.comments) await this.fetchComments()
-        return this.comments.filter(({ username, content, hidden }) => {
+        return this.comments.filter(({ username, content }) => {
             return (
-                !hidden &&
-                (!(this.keywords && this.keywords.length) ||
-                    this.keywords.includes(username) ||
-                    this.keywords.some((k) => content.includes(k)))
+                !(this.keywords && this.keywords.length) ||
+                this.keywords.includes(username) ||
+                this.keywords.some((k) => content.includes(k))
             )
         })
     }

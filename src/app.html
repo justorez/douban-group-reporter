@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💢豆瓣</title>
+    <link
+        rel="shortcut icon"
+        href="https://img1.doubanio.com/favicon.ico"
+        type="image/x-icon"
+    />
+    <link rel="stylesheet" href="/lulu.ui.css" />
+    <link rel="stylesheet" href="/tailwind.min.css" />
+    <style>
+        .fade-down-enter-active,
+        .fade-down-leave-active {
+            transition: all 0.3s ease-out;
+        }
+
+        .fade-down-enter-from,
+        .fade-down-leave-to {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="h-screen p-5 pb-0 overflow-hidden flex flex-col items-center"></div>
+
+    <template id="tpl">
+        <div class="mb-5 flex w-1/2">
+            <input
+                v-model="url"
+                class="ui-input flex-1 focus:border-green-500"
+                type="text"
+                placeholder="请输入帖子地址"
+            />
+            <button
+                class="ui-button ml-2"
+                :class="{ loading: initBtnLoading }"
+                :disabled="initBtnLoading"
+                data-type="success"
+                @click="init"
+            >
+                解析
+            </button>
+        </div>
+        <Transition name="fade-down">
+            <div 
+                v-if="totalPage"
+                class="mb-5 flex w-1/2" 
+            >
+                <input
+                    class="ui-input flex-1 focus:border-green-600"
+                    type="search"
+                    placeholder="搜索用户和评论，多个关键字空格隔开"
+                    v-model="keyword"
+                />
+                <button 
+                    class="ui-button ml-2" 
+                    data-type="success"
+                >
+                    {{ keyword ? '举报搜索到的评论' : '举报全部评论' }}
+                </button>
+            </div>
+        </Transition>
+        <Transition>
+            <div 
+                v-if="totalPage"
+                class="w-1/2 flex border-b border-black font-black pb-1"
+            >
+                <span class="w-1/4">用户名</span>
+                <span class="flex-1">评论内容</span>
+            </div>
+        </Transition>
+        <div class="w-1/2 pt-2 pb-5 flex-1 overflow-y-auto">
+            <div 
+                v-for="cmt in list" 
+                :key="cmt.id"
+                class="mb-1 flex"
+            >
+                <a 
+                    class="text-green-600 hover:underline w-1/4"
+                    :href="cmt.profile" 
+                    target="_blank"
+                >
+                    {{ cmt.username }}
+                </a>
+                <span class="flex-1 text-gray-600">
+                    <a 
+                        v-if="cmt.img" 
+                        :href="cmt.img" 
+                        target="_blank"
+                        class="text-blue-500 hover:underline mr-1"
+                    >
+                        [ 点击查看评论图片 ]
+                    </a>
+                    <span>{{ cmt.content }}</span>
+                </span>
+            </div>
+        </div>
+    </template>
+
+    <script type="module">
+        import { createApp, ref, watch } from '/vue.js'
+
+        // TODO 翻页和举报
+        createApp({
+            setup() {
+                const url = ref('xxx')
+                const initBtnLoading = ref(false)
+                let comments = []
+                const list = ref([])
+                const reasons = ref([])
+                const totalPage = ref(0)
+                const keyword = ref('')
+
+                watch(keyword, (val) => {
+                    let keys = val.trim().split(/\s+/)
+                    list.value = []
+                    list.value = keys.length
+                        ? comments.filter(({ username, content }) => {
+                            return keys.some(k => username.includes(k)) ||
+                               keys.some(k => content.includes(k))
+                        })
+                        : comments
+                })
+
+                const init = async () => {
+                    if (!url.value) return
+                    initBtnLoading.value = true
+                    const res = await fetch('/init', {
+                        method: 'post',
+                        body: url.value
+                    })
+                    initBtnLoading.value = false
+                    const data = await res.json()
+                    comments = data.comments
+                    list.value = data.comments
+                    reasons.value = data.reasons
+                    totalPage.value = data.totalPage
+                }
+
+                return {
+                    url,
+                    initBtnLoading,
+                    init,
+                    list,
+                    totalPage,
+                    reasons,
+                    keyword
+                }
+            },
+            template: '#tpl'
+        }).mount('#app')
+    </script>
+</body>
+</html>

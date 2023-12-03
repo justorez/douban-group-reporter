@@ -1,10 +1,6 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
 import readline from 'readline'
-import Tool from './src/tool.js'
-import { clearConsole, loadCookie } from './src/utils.js'
-
-const __dirname = dirname(fileURLToPath(import.meta.url))
+import Tool from './tool.js'
+import { clearConsole, loadCookie } from './utils.js'
 
 async function main() {
     const cookie = loadCookie()
