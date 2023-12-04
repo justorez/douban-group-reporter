@@ -16,6 +16,7 @@ pnpm add douban-group-reporter -g
 # 一定要加双引号！！！
 # cookie 会被保存到 ~/.douban/.cookie
 # 后续使用无需再次输入 cookie
+# 自动打开网页操作界面
 douban-app "your_cookie_string"
 ```
 
