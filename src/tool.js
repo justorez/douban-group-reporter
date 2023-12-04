@@ -3,7 +3,6 @@ import * as https from 'https'
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 import { printTable, Table } from 'console-table-printer'
-import { cloneDeep } from 'lodash-es'
 import headers from './headers.js'
 import { splitRow } from './utils.js'
 
@@ -30,9 +29,14 @@ export default class Tool {
             timeout: 8000,
             responseType: 'document'
         })
+        this.service.interceptors.response.use(null, (error) => {
+            const data = error.response.data
+            // console.error(data) // 豆瓣报错会响应一个网页
+            return Promise.reject('请求失败')
+        })
         this.comments = null
         this.totalPage = 1 // 评论总页数
-        this.rawReasons = null
+        this.rawReasons = null // 保留分类层级
         this.reasons = null
         this.keywords = null
     }
@@ -115,7 +119,13 @@ export default class Tool {
             `https://m.douban.com/rexxar/api/v2/group/${this.groupId}/report_reasons`,
             { responseType: 'json' }
         )
-        this.rawReasons = cloneDeep(data.douban_reasons)
+        // 保留层级
+        this.rawReasons = data.douban_reasons.map(item => {
+            item.type = item.id
+            return item
+        })
+
+        // 扁平化
         let reasons = data.douban_reasons
             .reduce((arr, item) => {
                 item.type = item.id
@@ -190,8 +200,24 @@ export default class Tool {
                 { responseType: 'json' }
             )
             console.log(`[已举报] [${reason.name}]`, cmt.username, cmt.profile, cmt.content)
-            await new Promise((r) => setTimeout(r, 1500))
+            await new Promise((r) => setTimeout(r, 800))
         }
         console.log('')
+    }
+
+    async reportOne(commentId, reason) {
+        const params = {
+            topic_id: this.topicId,
+            comment_id: commentId,
+            type: reason.type || reason.id,
+            reason: reason.name,
+            ck: this.ck
+        }
+        const res = await this.service.post(
+            `/j/group/${this.groupId}/member_report`,
+            params,
+            { responseType: 'json' }
+        )
+        return res.data
     }
 }

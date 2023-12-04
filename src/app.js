@@ -27,15 +27,25 @@ router.get('/', (ctx) => {
 })
 
 let tool = null
-router.post('/init', async (ctx) => {
-    ctx.type = 'application/json'
-    tool = new Tool(ctx.request.body, cookie)
-    // const data = await tool.init()
-    // ctx.body = JSON.stringify(data)
-    // fs.writeFileSync(resolve('../test/1.json'), JSON.stringify(data))
-
-    ctx.body = fs.readFileSync(resolve('../test/1.json'), 'utf-8')
-})
+router
+    .post('/init', async (ctx) => {
+        ctx.type = 'application/json'
+        tool = new Tool(ctx.request.body, cookie)
+        const data = await tool.init()
+        ctx.body = data
+    })
+    .post('/report', async (ctx) => {
+        if (!tool) {
+            ctx.status = 400
+            ctx.body = '还没有帖子被解析'
+            return
+        }
+        // console.log(ctx.request.body)
+        const { commentId, reason } = ctx.request.body
+        const res = await tool.reportOne(commentId, reason)
+        ctx.status = 200
+        ctx.body = res
+    })
 
 app.use(bodyParser({
     enableTypes: ['json','text']
@@ -44,5 +54,6 @@ app.use(router.routes())
 app.use(router.allowedMethods())
 
 app.listen(3000, () => {
-    // opener('http://127.0.0.1:3000')
+    console.log('App running at: http://127.0.0.1:3000')
+    opener('http://127.0.0.1:3000')
 })

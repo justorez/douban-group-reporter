@@ -10,6 +10,23 @@ pnpm add douban-group-reporter -g
 
 ## 用法
 
+### 网页应用
+
+```bash
+# 一定要加双引号！！！
+# cookie 会被保存到 ~/.douban/.cookie
+# 后续使用无需再次输入 cookie
+douban-app "your_cookie_string"
+```
+
+[![pi6PdmT.md.png](https://z1.ax1x.com/2023/12/04/pi6PdmT.md.png)](https://imgse.com/i/pi6PdmT)
+
+按钮动态展示处理进度，也可打开浏览器调试工具查看进度日志。
+
+[![pi6iC3n.md.png](https://z1.ax1x.com/2023/12/04/pi6iC3n.md.png)](https://imgse.com/i/pi6iC3n)
+
+### 命令行
+
 ```bash
 # 一定要加双引号！！！
 # cookie 会被保存到 ~/.douban/.cookie
