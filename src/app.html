@@ -23,12 +23,20 @@
             transform: translateY(-20px);
             opacity: 0;
         }
+        .current-page {
+            color: white;
+            background-color: rgb(5, 150, 105);
+        }
+        .current-page:hover {
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div id="app" class="h-screen p-5 pb-0 bg-gray-50 overflow-hidden flex flex-col items-center"></div>
 
     <template id="tpl">
+        <!-- 帖子地址输入栏 -->
         <div class="mb-5 flex w-1/2">
             <input
                 v-model="url"
@@ -46,18 +54,20 @@
                 解析
             </button>
         </div>
+
+        <!-- 搜索和工具栏 -->
         <Transition name="fade-down">
             <div 
                 v-if="totalPage"
                 class="mb-5 flex w-1/2" 
             >
                 <input
-                    class="ui-input flex-1 focus:border-green-600 transition-all duration-500"
+                    class="ui-input flex-1 focus:border-green-500 transition-all duration-500"
                     type="search"
-                    placeholder="搜索用户和评论，多个关键字空格隔开"
+                    placeholder="搜索当前页用户和评论，多个关键字空格隔开"
                     v-model="keyword"
                 />
-                <select v-model="myReasonId" class="w-1/3 ml-2 opacity-100 rounded-md border-0 p-2 text-gray-600 outline-none ring-1 ring-inset ring-gray-300 focus:ring-green-600">
+                <select v-model="myReasonId" class="w-1/3 ml-2 opacity-100 rounded-md border-0 p-2 text-gray-600 outline-none ring-1 ring-inset ring-gray-300 focus:ring-green-500">
                     <option class="text-gray-400" value="">请选择举报原因</option>
                     <template v-for="reason in reasons">
                         <optgroup v-if="reason.subs" :label="reason.name" :key="reason.name">
@@ -86,15 +96,29 @@
                 </button>
             </div>
         </Transition>
-        <Transition>
-            <div 
-                v-if="totalPage"
-                class="w-1/2 flex border-b border-black font-black pb-1"
+
+        <!-- 分页 -->
+        <div class="w-1/2 mb-1">
+            <span
+                v-for="i in totalPage"
+                :key="i"
+                :title="`第${i}页`"
+                class="inline-block w-8 h-8 mr-3 mb-3 text-gray-500 bg-gray-200 rounded text-center leading-8 cursor-pointer hover:text-green-600"
+                :class="{'current-page': currentPage === i}"
+                @click="goPage(i)"
             >
-                <span class="w-1/4">用户名</span>
-                <span class="flex-1">评论内容</span>
-            </div>
-        </Transition>
+                {{ i }}
+            </span>
+        </div>
+
+        <!-- 评论列表 -->
+        <div 
+            v-if="totalPage"
+            class="w-1/2 flex border-b border-black font-black pb-1"
+        >
+            <span class="w-1/4">用户名</span>
+            <span class="flex-1">评论内容</span>
+        </div>
         <div class="w-1/2 pt-2 pb-5 flex-1 overflow-y-auto">
             <div 
                 v-for="cmt in list" 
@@ -102,7 +126,7 @@
                 class="mb-1 flex"
             >
                 <a 
-                    class="text-green-600 hover:underline w-1/4"
+                    class="text-green-600 hover:underline w-1/4 flex-shrink-0"
                     :href="cmt.profile" 
                     target="_blank"
                 >
@@ -117,7 +141,7 @@
                     >
                         [ 点击查看评论图片 ]
                     </a>
-                    <span>{{ cmt.content }}</span>
+                    <span class="break-words">{{ cmt.content }}</span>
                 </span>
             </div>
         </div>
@@ -126,7 +150,7 @@
     <script type="importmap">
         {
             "imports": {
-                "vue": "https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.esm-browser.prod.min.js"
+                "vue": "https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.esm-browser.min.js"
             }
         }
     </script>
@@ -137,25 +161,31 @@
             setup() {
                 let comments = []
                 let reasonMap = {}
+                let currentUrl = ''
                 const url = ref('')
                 const initBtnLoading = ref(false)
                 const list = ref([])
                 const reasons = ref([])
                 const myReasonId = ref('')
                 const totalPage = ref(0)
+                const currentPage = ref(1)
                 const keyword = ref('')
 
                 async function init() {
                     if (!url.value) return alert('请输入帖子地址')
 
+                    // 暂存 url，被清空依然保证可以翻页
+                    const urlObj = new URL(url.value)
+                    currentUrl = urlObj.origin + urlObj.pathname
+
                     // reset
                     comments = []
                     list.value = []
                     totalPage.value = 0
+                    keyword.value = ''
                     reasons.value = []
                     reasonMap = {}
                     myReasonId.value = ''
-                    keyword.value = ''
 
                     initBtnLoading.value = true
                     const res = await fetch('/init', {
@@ -173,6 +203,25 @@
                         if (!x.subs) reasonMap[x.id] = {...x}
                         else x.subs.forEach(s => reasonMap[s.id] = {...s})
                     })
+                }
+
+                async function goPage(page) {
+                    if (page === currentPage.value) return
+                    currentPage.value = page
+                    const start = (page - 1) * 100
+                    const newUrl = start > 0 ? `${currentUrl}?start=${start}` : currentUrl
+                    console.log(`跳转到第${page}页：`, newUrl)
+
+                    comments = []
+                    list.value = []
+                    keyword.value = ''
+
+                    const res = await fetch('/jump', {
+                        method: 'post',
+                        body: newUrl
+                    })
+                    comments = await res.json()
+                    list.value = comments
                 }
 
                 watch(keyword, (val) => {
@@ -207,6 +256,7 @@
                 })
                 async function submit() {
                     if (!myReasonId.value) return alert('请选择举报原因')
+                    if (progress.total > 0) return
 
                     progress.width = 120
                     progress.total = list.value.length
@@ -237,12 +287,14 @@
                     initBtnLoading,
                     list,
                     totalPage,
+                    currentPage,
                     reasons,
                     keyword,
                     myReasonId,
                     progress,
                     reportButtonText,
                     init,
+                    goPage,
                     submit,
                     selectReason
                 }

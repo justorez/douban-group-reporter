@@ -20,11 +20,11 @@ pnpm add douban-group-reporter -g
 douban-app "your_cookie_string"
 ```
 
-[![pi6PdmT.md.png](https://z1.ax1x.com/2023/12/04/pi6PdmT.md.png)](https://imgse.com/i/pi6PdmT)
+[![pi6qhUx.md.png](https://z1.ax1x.com/2023/12/05/pi6qhUx.md.png)](https://imgse.com/i/pi6qhUx)
 
 按钮动态展示处理进度，也可打开浏览器调试工具查看进度日志。
 
-[![pi6iC3n.md.png](https://z1.ax1x.com/2023/12/04/pi6iC3n.md.png)](https://imgse.com/i/pi6iC3n)
+[![pi6qIPK.md.png](https://z1.ax1x.com/2023/12/05/pi6qIPK.md.png)](https://imgse.com/i/pi6qIPK)
 
 ### 命令行
 

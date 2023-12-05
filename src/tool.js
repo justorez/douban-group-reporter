@@ -30,7 +30,7 @@ export default class Tool {
             responseType: 'document'
         })
         this.service.interceptors.response.use(null, (error) => {
-            const data = error.response.data
+            // const data = error.response.data
             // console.error(data) // 豆瓣报错会响应一个网页
             return Promise.reject('请求失败')
         })
@@ -108,7 +108,11 @@ export default class Tool {
         return cookies
     }
 
-    async fetchComments() {
+    async fetchComments(newUrl) {
+        if (newUrl) {
+            this.url = newUrl
+            this.topicId = path.parse(newUrl).base
+        }
         const { data: html } = await this.service.get(this.url)
         this.comments = this.parse(html)
         return this.comments

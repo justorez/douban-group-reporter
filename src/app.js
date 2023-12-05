@@ -29,10 +29,13 @@ router.get('/', (ctx) => {
 let tool = null
 router
     .post('/init', async (ctx) => {
-        ctx.type = 'application/json'
         tool = new Tool(ctx.request.body, cookie)
-        const data = await tool.init()
-        ctx.body = data
+        ctx.type = 'application/json'
+        ctx.body = await tool.init()
+    })
+    .post('/jump', async (ctx) => {
+        ctx.type = 'application/json'
+        ctx.body = await tool.fetchComments(ctx.request.body)
     })
     .post('/report', async (ctx) => {
         if (!tool) {
@@ -55,5 +58,5 @@ app.use(router.allowedMethods())
 
 app.listen(3000, () => {
     console.log('App running at: http://127.0.0.1:3000')
-    opener('http://127.0.0.1:3000')
+    // opener('http://127.0.0.1:3000')
 })
