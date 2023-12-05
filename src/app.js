@@ -58,5 +58,5 @@ app.use(router.allowedMethods())
 
 app.listen(3000, () => {
     console.log('App running at: http://127.0.0.1:3000')
-    // opener('http://127.0.0.1:3000')
+    opener('http://127.0.0.1:3000')
 })

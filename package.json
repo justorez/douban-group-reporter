@@ -1,6 +1,6 @@
 {
   "name": "douban-group-reporter",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "💢豆瓣小组评论批量举报工具",
   "type": "module",
   "bin": {
