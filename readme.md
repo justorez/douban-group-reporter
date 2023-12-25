@@ -24,7 +24,7 @@ douban-app "your_cookie_string"
 
 按钮动态展示处理进度，也可打开浏览器调试工具查看进度日志。
 
-[![pi6qIPK.md.png](https://z1.ax1x.com/2023/12/05/pi6qIPK.md.png)](https://imgse.com/i/pi6qIPK)
+[![piHXmQS.md.png](https://s11.ax1x.com/2023/12/25/piHXmQS.md.png)](https://imgse.com/i/piHXmQS)
 
 ### 命令行
 

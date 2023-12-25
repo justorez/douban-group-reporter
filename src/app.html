@@ -30,6 +30,25 @@
         .current-page:hover {
             color: white;
         }
+        #reporting {
+            position: relative;
+            background-color: #dcdde1;
+            overflow: hidden;
+        }
+        #reporting span:nth-child(1) {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 1;
+            background-color: #1cad70;
+            transition: all .5s;
+        }
+        #reporting span:nth-child(2) {
+            position: relative;
+            z-index: 5;
+            transition: all .5s;
+        }
     </style>
 </head>
 <body>
@@ -87,12 +106,18 @@
                     </template>
                 </select>
                 <button 
-                    class="ui-button w-1/5 ml-2 transition-all duration-500 report-button"
+                    class="ui-button w-1/4 ml-2"
+                    :id="progress.total ? 'reporting' : ''"
                     data-type="success"
-                    :style="{ width: progress.width + '%' }"
                     @click="submit"
                 >
                     {{ reportButtonText }}
+
+                    <!-- 举报进度条 -->
+                    <template v-if="progress.total">
+                        <span :style="{ width: progressPercent }"></span>
+                        <span>{{ `举报中：${progress.done}/${progress.total}` }}</span>
+                    </template>
                 </button>
             </div>
         </Transition>
@@ -245,20 +270,19 @@
 
                 const progress = reactive({
                     total: 0,
-                    done: 0,
-                    width: '' // 原按钮长度 20%，即最小值为 20。最大值设为 120
+                    done: 0
+                })
+                const progressPercent = computed(() => {
+                    return Number(progress.done / progress.total * 100).toFixed(1) + '%'
                 })
                 const reportButtonText = computed(() => {
-                    if (progress.total > 0) {
-                        return `正在举报：${progress.done} / ${progress.total}`
-                    }
+                    if (progress.total > 0) return ''
                     return keyword.value ? '举报搜索到的评论' : '举报全部评论'
                 })
                 async function submit() {
                     if (!myReasonId.value) return alert('请选择举报原因')
                     if (progress.total > 0) return
 
-                    progress.width = 120
                     progress.total = list.value.length
                     const reason = reasonMap[myReasonId.value]
                     for (const cmt of list.value) {
@@ -271,15 +295,26 @@
                             })
                         })
                         progress.done++
-                        progress.width = 120 - (progress.done / progress.total * 100)
                         console.log(`[已举报] [${reason.name}]`, cmt.username, cmt.profile, cmt.content)
                         await new Promise((r) => setTimeout(r, 800))
                     }
 
                     progress.total = 0
                     progress.done = 0
-                    progress.width = ''
-                    alert('举报完毕')
+                    setTimeout(() => alert('举报完毕'), 800)
+                }
+
+                async function submitTest() {
+                    progress.total = 23
+                    const timer = setInterval(() => {
+                        progress.done++
+                        if (progress.done === progress.total) {
+                            clearInterval(timer)
+                            progress.total = 0
+                            progress.done = 0
+                            setTimeout(() => alert('举报完毕'), 800)
+                        }
+                    }, 500)
                 }
 
                 return {
@@ -292,6 +327,7 @@
                     keyword,
                     myReasonId,
                     progress,
+                    progressPercent,
                     reportButtonText,
                     init,
                     goPage,
