@@ -286,7 +286,7 @@
                     progress.total = list.value.length
                     const reason = reasonMap[myReasonId.value]
                     for (const cmt of list.value) {
-                        await fetch('/report', {
+                        const res = await fetch('/report', {
                             method: 'post',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -294,6 +294,12 @@
                                 commentId: cmt.id
                             })
                         })
+                        if (res.status !== 200) {
+                            alert('Cookie 貌似过期了，请重启应用并从命令行传入新 Cookie')
+                            progress.total = 0
+                            progress.done = 0
+                            return
+                        }
                         progress.done++
                         console.log(`[已举报] [${reason.name}]`, cmt.username, cmt.profile, cmt.content)
                         await new Promise((r) => setTimeout(r, 800))
