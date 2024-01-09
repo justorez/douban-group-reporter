@@ -21,8 +21,7 @@ pnpm add douban-group-reporter -g
 # 自动打开网页操作界面
 douban-app "your_cookie_string"
 ```
-
-[![pi6qhUx.md.png](https://z1.ax1x.com/2023/12/05/pi6qhUx.md.png)](https://imgse.com/i/pi6qhUx)
+[![pFpywzF.md.png](https://s11.ax1x.com/2024/01/09/pFpywzF.md.png)](https://imgse.com/i/pFpywzF)
 
 按钮动态展示处理进度，也可打开浏览器调试工具查看进度日志。
 
