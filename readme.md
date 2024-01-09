@@ -4,6 +4,8 @@
 
 ## 安装
 
+没有编程基础的小伙伴看这个文档：[新手教程](./readme.fresh.md)
+
 ```bash
 pnpm add douban-group-reporter -g
 ```
