@@ -1,10 +1,15 @@
 # Douban Group Reporter
 
+<p>
+    <a href="https://www.npmjs.com/package/douban-group-reporter"><img src="https://badgen.net/npm/v/douban-group-reporter"></a>
+    <a href="https://github.com/justorez/douban-group-reporter/actions/workflows/publish.yml"><img src="https://github.com/justorez/douban-group-reporter/actions/workflows/publish.yml/badge.svg"></a>
+</p>
+
 💢豆瓣小组评论批量举报工具
 
 ## 安装
 
-没有编程基础的小伙伴看这个文档：[新手教程](./readme.fresh.md)
+没有编程基础的小伙伴看这里：[新手教程](./readme.fresh.md)
 
 ```bash
 pnpm add douban-group-reporter -g
