@@ -8,7 +8,7 @@
     "douban-app": "src/app.js"
   },
   "scripts": {
-    "dev:app": "nodemon src/app.js"
+    "dev:app": "nodemon src/app.js -e js"
   },
   "engines": {
     "node": ">=16.20.0"

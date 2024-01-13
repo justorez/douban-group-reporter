@@ -14,6 +14,12 @@
     <link rel="stylesheet" href="/lulu.ui.css" />
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/tailwindcss/2.2.9/tailwind.min.css" />
     <style>
+        .main {
+            max-width: 750px;
+        }
+        .main > div {
+            width: 100%;
+        }
         .fade-down-enter-active,
         .fade-down-leave-active {
             transition: all 0.3s ease-out;
@@ -52,122 +58,125 @@
     </style>
 </head>
 <body>
-    <div id="app" class="h-screen p-5 pb-0 bg-gray-50 overflow-hidden flex flex-col items-center"></div>
+    <div id="app" class="h-screen p-5 pb-0 bg-gray-50 overflow-hidden"></div>
 
     <template id="tpl">
-        <!-- 帖子地址输入栏 -->
-        <div class="mb-5 flex w-1/2">
-            <input
-                v-model="url"
-                class="ui-input flex-1 focus:border-green-500"
-                type="text"
-                placeholder="请输入帖子地址"
-            />
-            <button
-                class="ui-button ml-2"
-                :class="{ loading: initBtnLoading }"
-                :disabled="initBtnLoading"
-                data-type="success"
-                @click="init"
-            >
-                解析
-            </button>
-        </div>
-
-        <!-- 搜索和工具栏 -->
-        <Transition name="fade-down">
-            <div 
-                v-if="totalPage"
-                class="mb-5 flex w-1/2" 
-            >
+        <div class="main w-full h-full m-auto flex flex-col items-center">
+            <!-- 帖子地址输入栏 -->
+            <div class="mb-5 flex">
                 <input
-                    class="ui-input flex-1 focus:border-green-500 transition-all duration-500"
-                    type="search"
-                    placeholder="搜索当前页用户和评论，多个关键字空格隔开"
-                    v-model="keyword"
+                    v-model="url"
+                    class="ui-input flex-1 focus:border-green-500"
+                    type="text"
+                    placeholder="请输入帖子地址"
                 />
-                <select v-model="myReasonId" class="w-1/3 ml-2 opacity-100 rounded-md border-0 p-2 text-gray-600 outline-none ring-1 ring-inset ring-gray-300 focus:ring-green-500">
-                    <option class="text-gray-400" value="">请选择举报原因</option>
-                    <template v-for="reason in reasons">
-                        <optgroup v-if="reason.subs" :label="reason.name" :key="reason.name">
-                            <option 
-                                v-for="item in reason.subs"
-                                :key="item.id"
-                                :value="item.id"
-                                @click="selectReason(item)"
-                            >{{ item.name }}</option>
-                        </optgroup>
-                        <option 
-                            v-else
-                            :key="reason.id"
-                            :value="reason.id"
-                            @click="selectReason(reason)"
-                        >{{ reason.name }}</option>
-                    </template>
-                </select>
-                <button 
-                    class="ui-button w-1/4 ml-2"
-                    :id="progress.total ? 'reporting' : ''"
+                <button
+                    class="ui-button ml-2"
+                    :class="{ loading: initBtnLoading }"
+                    :disabled="initBtnLoading"
                     data-type="success"
-                    @click="submit"
+                    @click="init"
                 >
-                    {{ reportButtonText }}
-
-                    <!-- 举报进度条 -->
-                    <template v-if="progress.total">
-                        <span :style="{ width: progressPercent }"></span>
-                        <span>{{ `举报中：${progress.done}/${progress.total}` }}</span>
-                    </template>
+                    解析
                 </button>
             </div>
-        </Transition>
 
-        <!-- 分页 -->
-        <div class="w-1/2 mb-1">
-            <span
-                v-for="i in totalPage"
-                :key="i"
-                :title="`第${i}页`"
-                class="inline-block w-8 h-8 mr-3 mb-3 text-gray-500 bg-gray-200 rounded text-center leading-8 cursor-pointer hover:text-green-600"
-                :class="{'current-page': currentPage === i}"
-                @click="goPage(i)"
-            >
-                {{ i }}
-            </span>
-        </div>
-
-        <!-- 评论列表 -->
-        <div 
-            v-if="totalPage"
-            class="w-1/2 flex border-b border-black font-black pb-1"
-        >
-            <span class="w-1/4">用户名</span>
-            <span class="flex-1">评论内容</span>
-        </div>
-        <div class="w-1/2 pt-2 pb-5 flex-1 overflow-y-auto">
-            <div 
-                v-for="cmt in list" 
-                :key="cmt.id"
-                class="mb-1 flex"
-            >
-                <a 
-                    class="text-green-600 hover:underline w-1/4 flex-shrink-0"
-                    :href="cmt.profile" 
-                    target="_blank"
+            <!-- 搜索和工具栏 -->
+            <Transition name="fade-down">
+                <div 
+                    v-if="totalPage"
+                    class="mb-5 flex w-1/2" 
                 >
-                    {{ cmt.username }}
-                </a>
-                <span class="flex-1 text-gray-700">
-                    <a 
-                        v-if="cmt.img" 
-                        :href="cmt.img" 
-                        target="_blank"
-                        class="text-blue-500 hover:underline mr-1"
+                    <input
+                        v-model="keyword"
+                        class="ui-input flex-1 focus:border-green-500 transition-all duration-500"
+                        type="search"
+                        placeholder="搜索用户和评论，多个关键字空格隔开"
+                        title="多个关键字空格隔开，用户名全文匹配，评论模糊匹配"
+                    />
+                    <select v-model="myReasonId" class="w-1/3 ml-2 opacity-100 rounded-md border-0 p-2 text-gray-600 outline-none ring-1 ring-inset ring-gray-300 focus:ring-green-500">
+                        <option class="text-gray-400" value="">请选择举报原因</option>
+                        <template v-for="reason in reasons">
+                            <optgroup v-if="reason.subs" :label="reason.name" :key="reason.name">
+                                <option 
+                                    v-for="item in reason.subs"
+                                    :key="item.id"
+                                    :value="item.id"
+                                    @click="selectReason(item)"
+                                >{{ item.name }}</option>
+                            </optgroup>
+                            <option 
+                                v-else
+                                :key="reason.id"
+                                :value="reason.id"
+                                @click="selectReason(reason)"
+                            >{{ reason.name }}</option>
+                        </template>
+                    </select>
+                    <button 
+                        class="ui-button w-1/4 ml-2"
+                        :id="progress.total ? 'reporting' : ''"
+                        data-type="success"
+                        @click="submit"
                     >
-                        [ 点击查看评论图片 ]
-                    </a>
-                    <span class="break-words">{{ cmt.content }}</span>
+                        {{ reportButtonText }}
+
+                        <!-- 举报进度条 -->
+                        <template v-if="progress.total">
+                            <span :style="{ width: progressPercent }"></span>
+                            <span>{{ `举报中：${progress.done}/${progress.total}` }}</span>
+                        </template>
+                    </button>
+                </div>
+            </Transition>
+
+            <!-- 分页 -->
+            <div class="w-1/2 mb-1">
+                <span
+                    v-for="i in totalPage"
+                    :key="i"
+                    :title="`第${i}页`"
+                    class="inline-block w-8 h-8 mr-3 mb-3 text-gray-500 bg-gray-200 rounded text-center leading-8 cursor-pointer hover:text-green-600"
+                    :class="{'current-page': currentPage === i}"
+                    @click="goPage(i)"
+                >
+                    {{ i }}
                 </span>
+            </div>
+
+            <!-- 评论列表 -->
+            <div 
+                v-if="totalPage"
+                class="w-1/2 flex border-b border-black font-black pb-1"
+            >
+                <span class="w-1/4">用户名</span>
+                <span class="flex-1">评论内容</span>
+            </div>
+            <div class="w-1/2 pt-2 pb-5 flex-1 overflow-y-auto">
+                <div 
+                    v-for="cmt in list" 
+                    :key="cmt.id"
+                    class="mb-1 flex"
+                >
+                    <a 
+                        class="text-green-600 hover:underline w-1/4 flex-shrink-0"
+                        :href="cmt.profile" 
+                        target="_blank"
+                    >
+                        {{ cmt.username }}
+                    </a>
+                    <span class="flex-1 text-gray-700">
+                        <a 
+                            v-if="cmt.img" 
+                            :href="cmt.img" 
+                            target="_blank"
+                            class="text-blue-500 hover:underline mr-1"
+                        >
+                            [ 点击查看评论图片 ]
+                        </a>
+                        <span class="break-words">{{ cmt.content }}</span>
+                    </span>
+                </div>
             </div>
         </div>
     </template>
@@ -254,7 +263,7 @@
                     list.value = []
                     list.value = keys.length
                         ? comments.filter(({ username, content }) => {
-                            return keys.some(k => username.includes(k)) ||
+                            return keys.includes(username) ||
                                keys.some(k => content.includes(k))
                         })
                         : comments
