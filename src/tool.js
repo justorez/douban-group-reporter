@@ -1,5 +1,4 @@
 import path from 'path'
-import * as https from 'https'
 import axios from 'axios'
 import * as cheerio from 'cheerio'
 import { printTable, Table } from 'console-table-printer'
@@ -21,10 +20,6 @@ export default class Tool {
                 ...headers,
                 cookie
             },
-            httpsAgent: new https.Agent({
-                keepAlive: true,
-                rejectUnauthorized: false
-            }),
             withCredentials: true,
             timeout: 8000,
             responseType: 'document'
